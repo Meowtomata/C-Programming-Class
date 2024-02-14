@@ -25,13 +25,14 @@ int main(int argc, char** argv)
     if (initialAmount <= 0) 
     {
         printf("ERROR: amount must be positive!\n");
+        return 1;
     }
 
     // starting information
     printf("Deposited $%.2f into %s\n", initialAmount, account);
     
-    float interest = 0;
-    float finalAmount = initialAmount;
+    double interest = 0;
+    double finalAmount = initialAmount;
 
     // print interest and amount over time
     for (int i = 1; i <= months; i++) 
