@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+ * Name: Anatoliy Lynevych
+ * Username: alynevyc
+ * Description: Program outputs savings stuff
+*/
 int main(int argc, char** argv) 
 {
     // check if there are enough arguments
@@ -16,8 +21,8 @@ int main(int argc, char** argv)
     float rate = atof(argv[3]);
     int months = atoi(argv[4]);
 
-    // depositing a negative amount is not allowed
-    if (initialAmount < 0) 
+    // only positive amounts allowed
+    if (initialAmount <= 0) 
     {
         printf("ERROR: amount must be positive!\n");
     }
@@ -33,7 +38,7 @@ int main(int argc, char** argv)
     {
         interest = finalAmount * rate / 100 / 12;
         finalAmount += interest;
-        printf("Month %i, %.2f change, new total $%.2f\n", i, interest, finalAmount);
+        printf("Month %i, $%.2f change, new total $%.2f\n", i, interest, finalAmount);
     }
 
     // print final relative change

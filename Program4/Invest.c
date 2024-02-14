@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void minMaxAvg(double*, int);
+/*
+ * Name: Anatoliy Lynevych
+ * Username: alynevyc
+ * Description: Program outputs investment stuff
+*/
+int minMaxAvg(double*, int);
 void bestCase(double*, int);
 
 int main(void) 
@@ -18,13 +23,13 @@ int main(void)
 
     double stocks[numOfDays];
     
-    minMaxAvg(stocks, numOfDays);
+    if (minMaxAvg(stocks, numOfDays) == 1) return 1;
     bestCase(stocks, numOfDays);
 
     return 0;
 }
 
-void minMaxAvg(double* stocks, int numOfDays) 
+int minMaxAvg(double* stocks, int numOfDays) 
 {
     double min = __DBL_MAX__; 
     double max = 0;
@@ -38,7 +43,7 @@ void minMaxAvg(double* stocks, int numOfDays)
         if (stocks[i] <= 0) 
         {
             printf("ERROR: prices must be positive!\n");
-            return;
+            return 1;
         }
         if (stocks[i] < min) 
         {
@@ -58,6 +63,8 @@ void minMaxAvg(double* stocks, int numOfDays)
     printf("Min price $%.2lf on day %i\n", min, minDay);
     printf("Max price $%.2lf on day %i\n", max, maxDay);
     printf("Average price $%.2lf\n", sum / numOfDays);
+
+    return 0;
 }
 
 void bestCase(double* stocks, int numOfDays) 
@@ -85,8 +92,8 @@ void bestCase(double* stocks, int numOfDays)
             if (relativeChange < minRelativeChange) 
             {
                 minRelativeChange = relativeChange;
-                bestBuyDay = i + 1;
-                bestSellDay = j + 1;
+                worstBuyDay = i + 1;
+                worstSellDay = j + 1;
             }
             relativeChangeSum += relativeChange;
             simulatedTradeCount++;
@@ -94,7 +101,7 @@ void bestCase(double* stocks, int numOfDays)
     }
 
     printf("Simulated %i possible trades\n", simulatedTradeCount);
-    printf("Average case, %.2f%%\n", relativeChangeSum / simulatedTradeCount);
+    printf("Avg case, %.2f%%\n", relativeChangeSum / simulatedTradeCount);
     printf("Best case, buy day %i, sell day %i, %.2f%%\n", bestBuyDay, bestSellDay, maxRelativeChange);
     printf("Worst case, buy day %i, sell day %i, %.2f%%\n", worstBuyDay, worstSellDay, minRelativeChange);
 }
