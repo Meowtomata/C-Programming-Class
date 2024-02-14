@@ -38,6 +38,8 @@ int minMaxAvg(double* stocks, int numOfDays)
 
     double sum = 0;
     int i = 0;
+
+    // && i <= numOfDays ??
     while (scanf("%lf", &stocks[i]) > 0) 
     {
         if (stocks[i] <= 0) 

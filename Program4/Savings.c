@@ -17,8 +17,8 @@ int main(int argc, char** argv)
 
     // initialize variables using command line arguments
     char* account = argv[1];
-    float initialAmount = atof(argv[2]);
-    float rate = atof(argv[3]);
+    double initialAmount = atof(argv[2]);
+    double rate = atof(argv[3]);
     int months = atoi(argv[4]);
 
     // only positive amounts allowed
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     }
 
     // print final relative change
-    float relativeChange = ((finalAmount - initialAmount) / initialAmount) * 100;
+    double relativeChange = ((finalAmount - initialAmount) / initialAmount) * 100;
     printf("Relative change: %.2f%%", relativeChange);
     
     return 0;
