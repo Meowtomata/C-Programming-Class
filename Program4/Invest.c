@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void minMaxAvg(double*, int);
+
 int main(void) 
 {
     // read first line of file
@@ -15,6 +17,13 @@ int main(void)
 
     double stocks[numOfDays];
     
+    minMaxAvg(stocks, numOfDays);
+
+    return 0;
+}
+
+void minMaxAvg(double* stocks, int numOfDays) 
+{
     double min = __DBL_MAX__; 
     double max = 0;
     int minDay = 0;
@@ -27,7 +36,7 @@ int main(void)
         if (stocks[i] <= 0) 
         {
             printf("ERROR: prices must be positive!\n");
-            return 1;
+            return;
         }
         if (stocks[i] < min) 
         {
@@ -47,6 +56,4 @@ int main(void)
     printf("Min price $%.2lf on day %i\n", min, minDay);
     printf("Max price $%.2lf on day %i\n", max, maxDay);
     printf("Average price $%.2lf\n", sum / numOfDays);
-
-    return 0;
 }
