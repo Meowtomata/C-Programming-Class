@@ -62,7 +62,7 @@ int minMaxAvg(double* stocks, int numOfDays)
     printf("Read %i days\n", numOfDays);
     printf("Min price $%.2lf on day %i\n", min, minDay);
     printf("Max price $%.2lf on day %i\n", max, maxDay);
-    printf("Average price $%.2lf\n", sum / numOfDays);
+    printf("Avg price $%.2lf\n", sum / numOfDays);
 
     return 0;
 }
@@ -101,7 +101,7 @@ void bestCase(double* stocks, int numOfDays)
     }
 
     printf("Simulated %i possible trades\n", simulatedTradeCount);
-    printf("Avg case, %.2f%%\n", relativeChangeSum / simulatedTradeCount);
+    printf("Average case, %.2f%%\n", relativeChangeSum / simulatedTradeCount);
     printf("Best case, buy day %i, sell day %i, %.2f%%\n", bestBuyDay, bestSellDay, maxRelativeChange);
     printf("Worst case, buy day %i, sell day %i, %.2f%%\n", worstBuyDay, worstSellDay, minRelativeChange);
 }
