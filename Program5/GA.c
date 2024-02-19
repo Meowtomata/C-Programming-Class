@@ -44,9 +44,13 @@ int main(int argc, char** argv)
     for (int i = 0; i < N; i++)
     {
         fscanf(fp, "%d", &weights[i]);
-        printf("%d+x_%d ", weights[i], i);
+        printf("%d*x_%d", weights[i], i);
+        if (i < N - 1)
+        {
+            printf(" + ");
+        }
     }
-    printf("= %d\n", C);
+    printf(" = %d\n", C);
 
 
     // initialize population and initial fitness values
@@ -66,15 +70,27 @@ int main(int argc, char** argv)
         fitness[i] = abs(fitnessSum - C);
     }
 
+    FILE * outfp = NULL;
+    if (argc > 5) 
+    {
+        char* outFile = argv[5];
+        outfp = fopen(outFile, "w");
+        if (outfp == NULL)
+        {
+            printf("ERROR: failed to open log file!\n");
+            return 1;
+        }
+    }
 
+    int actualSteps = 0;
     int mutatedIndividual[N];
     for (int step = 0; step < maxSteps; step++)
-    {
+    {   
+
         // select the first individual from the population at random
         int randomIndividual = rand() % P;
 
         // create a duplicate individual to mutate
-        
         for (int i = 0; i < N; i++) 
         {
             mutatedIndividual[i] = population[randomIndividual][i];
@@ -88,7 +104,6 @@ int main(int argc, char** argv)
         mutatedIndividual[randomGene] = newGeneValue;
 
 
-        // replace worst individual with mutated
         int worstFitnessIndex = 0;
         for (int i = 1; i < P; i++) 
         {
@@ -98,7 +113,38 @@ int main(int argc, char** argv)
             }
         }
 
-        // replace genes of teh worst individual in the population with
+        if (outfp != NULL)
+        {
+            fprintf(outfp, "*** Generation %d ***\n", step);
+            // print however many individuals there are with their genes
+            for (int i = 0; i < P; i++)
+            {
+                // print the index
+                fprintf(outfp, "%d: ", i);
+                // print each of the gene values in sequential order
+                for (int j = 0; j < N; j++)
+                {
+                    fprintf(outfp, "%d", population[i][j]);
+                }
+                fprintf(outfp, ", fitness=%d\n", fitness[i]);
+            }
+
+            int bestFitnessIndex = 0;
+            double fitnessSum = fitness[0];
+            for (int i = 1; i < P; i++) 
+            {
+                if (fitness[i] < fitness[bestFitnessIndex])
+                {
+                    bestFitnessIndex = i;
+                }
+                fitnessSum += fitness[i];
+            }
+            fprintf(outfp, "avg=%.4f, min=%d, max=%d\n", fitnessSum / P, fitness[worstFitnessIndex], fitness[bestFitnessIndex]);
+        }
+
+
+        // mutation
+        // replace genes of the worst individual in the population with
         // mutated individual (im guessing through fitness)
         int sum = 0;
         for (int i = 0; i < N; i++)
@@ -108,9 +154,15 @@ int main(int argc, char** argv)
         }
         fitness[worstFitnessIndex] = abs(sum - C);
 
+        actualSteps = step + 1;
         if (fitness[worstFitnessIndex] == 0)
         {
             break;
+        }
+
+        if (outfp != NULL)
+        {
+            fprintf(outfp, "Mutated individual %d -> %d, changed gene %d to %d\n", randomIndividual, worstFitnessIndex, randomGene, newGeneValue);
         }
 
     }
@@ -130,8 +182,9 @@ int main(int argc, char** argv)
     {
         printf("%d", population[bestFitIndex][i]);
     }
-    printf(", fitness=%d, steps=%d", fitness[bestFitIndex], maxSteps);
+    printf(", fitness=%d, steps=%d", fitness[bestFitIndex], actualSteps);
 
+    
 
     fclose(fp);
     return 0;

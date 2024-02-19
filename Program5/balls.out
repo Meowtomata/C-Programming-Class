@@ -1,0 +1,30 @@
+*** Generation 0 ***
+0: 43936, fitness=153
+1: 11005, fitness=381
+2: 83670, fitness=379
+avg=304.3333, min=381, max=153
+Mutated individual 2 -> 1, changed gene 3 to 8
+*** Generation 1 ***
+0: 43936, fitness=153
+1: 83680, fitness=354
+2: 83670, fitness=379
+avg=295.3333, min=379, max=153
+Mutated individual 2 -> 2, changed gene 0 to 7
+*** Generation 2 ***
+0: 43936, fitness=153
+1: 83680, fitness=354
+2: 73670, fitness=380
+avg=295.6667, min=380, max=153
+Mutated individual 2 -> 2, changed gene 0 to 1
+*** Generation 3 ***
+0: 43936, fitness=153
+1: 83680, fitness=354
+2: 13670, fitness=386
+avg=297.6667, min=386, max=153
+Mutated individual 1 -> 2, changed gene 2 to 7
+*** Generation 4 ***
+0: 43936, fitness=153
+1: 83680, fitness=354
+2: 83780, fitness=344
+avg=283.6667, min=354, max=153
+Mutated individual 0 -> 1, changed gene 3 to 7
