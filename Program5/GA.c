@@ -2,13 +2,19 @@
 #include <stdlib.h>
 #include <math.h>
 
+/*
+* Name: Anatoliy Lynevych
+* Username: alynevyc
+* Description: Program 5 implements a genetic algorithm and outputs the 
+*   best solution for a linear equation after some number of steps or
+*   if the solution is perfect
+*/
 int main(int argc, char** argv) 
 {
 
+    // 5 arguments are enough to run the program
     if (argc < 5) 
     {
-        // is it bad to put \n at end of error messages
-        // is it bad to return 1?
         printf("Usage: GA <individuals> <max steps> <seed> <in file> [out file]\n");
         return 1;
     }
@@ -70,6 +76,7 @@ int main(int argc, char** argv)
         fitness[i] = abs(fitnessSum - C);
     }
 
+    // check if output file provided (6th optional argument)
     FILE * outfp = NULL;
     if (argc > 5) 
     {
@@ -175,6 +182,7 @@ int main(int argc, char** argv)
         }
     }
 
+    // print the final mutated Generation
     if (outfp != NULL)
     {
         fprintf(outfp, "*** Generation %d ***\n", actualSteps);
@@ -202,6 +210,7 @@ int main(int argc, char** argv)
             fitnessSum += fitness[i];
         }
         fprintf(outfp, "avg=%.4f, min=%d, max=%d\n", fitnessSum / P, fitness[bestFitIndex], fitness[worstFitIndex]);
+        fclose(outfp);
     }
 
     
