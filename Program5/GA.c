@@ -139,7 +139,7 @@ int main(int argc, char** argv)
                 }
                 fitnessSum += fitness[i];
             }
-            fprintf(outfp, "avg=%.4f, min=%d, max=%d\n", fitnessSum / P, fitness[worstFitnessIndex], fitness[bestFitnessIndex]);
+            fprintf(outfp, "avg=%.4f, min=%d, max=%d\n", fitnessSum / P, fitness[bestFitnessIndex], fitness[worstFitnessIndex]);
         }
 
 
@@ -155,18 +155,16 @@ int main(int argc, char** argv)
         fitness[worstFitnessIndex] = abs(sum - C);
 
         actualSteps = step + 1;
-        if (fitness[worstFitnessIndex] == 0)
-        {
-            break;
-        }
 
         if (outfp != NULL)
         {
             fprintf(outfp, "Mutated individual %d -> %d, changed gene %d to %d\n", randomIndividual, worstFitnessIndex, randomGene, newGeneValue);
         }
-
+        if (fitness[worstFitnessIndex] == 0)
+        {
+            break;
+        }
     }
-
 
     int bestFitIndex = 0;
     for (int i = 1; i < P; i++)
@@ -176,15 +174,43 @@ int main(int argc, char** argv)
             bestFitIndex = i;
         }
     }
+
+    if (outfp != NULL)
+    {
+        fprintf(outfp, "*** Generation %d ***\n", actualSteps);
+        // print however many individuals there are with their genes
+        for (int i = 0; i < P; i++)
+        {
+            // print the index
+            fprintf(outfp, "%d: ", i);
+            // print each of the gene values in sequential order
+            for (int j = 0; j < N; j++)
+            {
+                fprintf(outfp, "%d", population[i][j]);
+            }
+            fprintf(outfp, ", fitness=%d\n", fitness[i]);
+        }
+
+        int worstFitIndex = 0;
+        double fitnessSum = fitness[0];
+        for (int i = 1; i < P; i++) 
+        {
+            if (fitness[i] > fitness[worstFitIndex])
+            {
+                worstFitIndex = i;
+            }
+            fitnessSum += fitness[i];
+        }
+        fprintf(outfp, "avg=%.4f, min=%d, max=%d\n", fitnessSum / P, fitness[bestFitIndex], fitness[worstFitIndex]);
+    }
+
     
     printf("BEST %d: ", bestFitIndex);
     for (int i = 0; i < N; i++)
     {
         printf("%d", population[bestFitIndex][i]);
     }
-    printf(", fitness=%d, steps=%d", fitness[bestFitIndex], actualSteps);
-
-    
+    printf(", fitness=%d, steps=%d\n", fitness[bestFitIndex], actualSteps);
 
     fclose(fp);
     return 0;
