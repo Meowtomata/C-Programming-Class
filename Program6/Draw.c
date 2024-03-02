@@ -23,7 +23,7 @@ void initImage(int width, int height, double image[width][height])
 char* draw(double color)
 {
     if (color >= 0.9) return "@";
-    if (color >= 0.8) return "%%";
+    if (color >= 0.8) return "%";
     if (color >= 0.7) return "#";
     if (color >= 0.6) return "*";
     if (color >= 0.5) return "+";
@@ -67,6 +67,7 @@ void printImage(int width, int height, double image[width][height])
 
 void drawPoint(int width, int height, double image[width][height], int x, int y, double color)
 {
+    if (x > width || y > height) return;
     image[x][y] = color;
 }
 
