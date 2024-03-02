@@ -73,6 +73,14 @@ void drawPoint(int width, int height, double image[width][height], int x, int y,
 
 void drawRectangle(int width, int height, double image[width][height], int left, int top, int rectangleWidth, int rectangleHeight, double color)
 {
+    for (int i = 0; i < rectangleWidth; i++)
+    {
+        for (int j = 0; j < rectangleHeight; j++)
+        {
+            image[left + i][top + j] = color;
+            
+        }
+    }
 }
 
 void convertToBlackAndWhite(int width, int height, double image[width][height], double threshold)
@@ -148,7 +156,7 @@ int main(void)
                 int top = 0;
                 int rectangleWidth = 0;
                 int rectangleHeight = 0;
-                result = 0; // TODO: fix
+                result = scanf(" %d %d %d %d %lf", &left, &top, &rectangleWidth, &rectangleHeight, &color); // TODO: fix
                 if (result != 5)
                 {
                     printf("Invalid rectangle command!\n");
