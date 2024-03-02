@@ -19,31 +19,31 @@ void initImage(int width, int height, double image[width][height])
 // Check the calls in the main function to figure out the order and types of 
 // the parameters that are passed to each function.
 
-void printImage()
+void printImage(int width, int height, double image[width][height])
 {
 }
 
-void drawPoint()
+void drawPoint(int width, int height, double image[width][height], int x, int y, double color)
 {
 }
 
-void drawRectangle()
+void drawRectangle(int width, int height, double image[width][height], int left, int top, int rectangleWidth, int rectangleHeight, double color)
 {
 }
 
-void convertToBlackAndWhite()
+void convertToBlackAndWhite(int width, int height, double image[width][height], double threshold)
 {
 }
 
-void drawLine()
+void drawLine(int width, int height, double image[width][height], int x1, int y1, int x2, int y2, double color)
 {
 }
 
-void printStats()
+void printStats(int width, int height, double image[width][height])
 {
 }
 
-void floodFill()
+void floodFill(int width, int height, double image[width][height], int x, int y, double color)
 {
 }
 
