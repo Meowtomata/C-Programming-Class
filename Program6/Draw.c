@@ -19,12 +19,55 @@ void initImage(int width, int height, double image[width][height])
 // Check the calls in the main function to figure out the order and types of 
 // the parameters that are passed to each function.
 
+// determine which character to output based on color value
+char* draw(double color)
+{
+    if (color >= 0.9) return "@";
+    if (color >= 0.8) return "%%";
+    if (color >= 0.7) return "#";
+    if (color >= 0.6) return "*";
+    if (color >= 0.5) return "+";
+    if (color >= 0.4) return "=";
+    if (color >= 0.3) return "-";
+    if (color >= 0.2) return ":";
+    if (color >= 0.1) return ".";
+    if (color >= 0) return " ";
+}
+
 void printImage(int width, int height, double image[width][height])
 {
+    // print top border
+    printf("+");
+    for (int i = 0; i < width; i++)
+    {
+        printf("-");
+    }
+    printf("+\n");
+    
+    // print body of image
+    for (int i = 0; i < height; i++)
+    {
+        printf("|");
+        for (int j = 0; j < width; j++)
+        {   
+            char* b = draw(image[j][i]);
+            printf("%s", b);
+        }
+        printf("|\n");
+    }
+
+    // print bottom border
+    printf("+");
+    for (int i = 0; i < width; i++)
+    {
+        printf("-");
+    }
+    printf("+\n");
 }
 
 void drawPoint(int width, int height, double image[width][height], int x, int y, double color)
 {
+    image[x][y] = color;
 }
 
 void drawRectangle(int width, int height, double image[width][height], int left, int top, int rectangleWidth, int rectangleHeight, double color)
@@ -60,7 +103,7 @@ int main(void)
     // The scanf function returns an integer with the number of read in variables.
     // The main program uses this result to check for badly formatted input.
     // The scanf function can read in multiple variables in one call (see the lecture slides).
-    int result = 0;
+    int result = scanf(" %d %d", &width, &height);
     
     // Program only supports images that are 1x1 or bigger
     if ((width <= 0) || (height <= 0) || (result != 2))
@@ -88,7 +131,7 @@ int main(void)
                 // Draw a point, read in: x, y, color
                 int x = 0;
                 int y = 0;
-                result = 0; // TODO: fix
+                result = scanf(" %d %d %lf", &x, &y, &color); // TODO: fix
                 if (result != 3)
                 {
                     printf("Invalid point command!\n");
