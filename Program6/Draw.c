@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 // Initializes all the pixels of an image to black.
 void initImage(int width, int height, double image[width][height])
@@ -15,10 +16,6 @@ void initImage(int width, int height, double image[width][height])
     }
 }
 
-// TODO: add a parameter list and implementation for the remaining functions.
-// Check the calls in the main function to figure out the order and types of 
-// the parameters that are passed to each function.
-
 // determine which character to output based on color value
 char* draw(double color)
 {
@@ -31,7 +28,7 @@ char* draw(double color)
     if (color >= 0.3) return "-";
     if (color >= 0.2) return ":";
     if (color >= 0.1) return ".";
-    if (color >= 0) return " ";
+    return " ";
 }
 
 void printImage(int width, int height, double image[width][height])
@@ -85,18 +82,104 @@ void drawRectangle(int width, int height, double image[width][height], int left,
 
 void convertToBlackAndWhite(int width, int height, double image[width][height], double threshold)
 {
+    for (int i = 0; i < width; i++)
+    {
+        for (int j = 0; j < height; j++)
+        {
+            if (image[i][j] >= threshold) image[i][j] = 1.0;
+            else image[i][j] = 0.0;
+        }
+    }
 }
 
 void drawLine(int width, int height, double image[width][height], int x1, int y1, int x2, int y2, double color)
 {
+    // 2. calculate the difference between the points
+    double dx = x2 - x1;
+    double dy = y2 - y1;
+
+    // 3. calculate slope of line
+    double m = dy / dx;
+
+    // 4. set initial point of line
+    image[x1][y1] = color;
+
+    // 5. Loop through the x-coordinates of the line, incrementing by one each time
+    for (int x = x1; x <= x2; x++)
+    {
+        // , and calculate the corresponding y-coordinate
+        int y = round(y1 + m * (x - x1));
+
+        // 6. Plot the pixel at the calculated (x,y) coordinate.
+        image[x][y] = color;
+    }
+
+    // Repeate until x2, y2 is reached
 }
 
 void printStats(int width, int height, double image[width][height])
-{
+{   
+    double sum = 0;
+    double min = __DBL_MAX__;
+    double max = -__DBL_MAX__;
+    int total = width * height;
+
+    // determine min, max, and total sum of image color values
+    for (int i = 0; i < width; i++)
+    {
+        for (int j = 0; j < height; j++)
+        {
+            sum += image[i][j];
+            if (image[i][j] < min)
+            {
+                min = image[i][j];
+            }
+            if (image[i][j] > max)
+            {
+                max = image[i][j];
+            }
+        }
+    }
+
+    // determine standard deviation of color values
+    double sd = 0;
+    for (int i = 0; i < width; i++)
+    {
+        for (int j = 0; j < height; j++)
+        {
+            sd += pow(image[i][j] - sum / total, 2);
+        }
+    }
+
+    sd = sd / total;
+    sd = sqrt(sd);
+
+    // output calculate values
+    printf("Color range [%.2f, %.2f], mean %.4f, sd %.4f", min, max, sum / total, sd);
 }
 
 void floodFill(int width, int height, double image[width][height], int x, int y, double color)
-{
+{   
+    // checks if x and y are within bounds
+    if (x >= width || x < 0 || y >= height || y < 0)
+    {
+        return;
+    }
+
+    // checks if color is greater than current color
+    if (image[x][y] >= color)
+    {
+        return;
+    }
+
+    image[x][y] = color;
+    floodFill(width, height, image, x + 1, y, color);
+    floodFill(width, height, image, x, y - 1, color);
+    floodFill(width, height, image, x, y + 1, color);
+    floodFill(width, height, image, x - 1, y, color);
+
+
+    
 }
 
 // Print the resulting greyscale image as ASCII art.
@@ -108,10 +191,7 @@ int main(void)
     int width = 0;
     int height = 0;
         
-    // TODO: replace 0 with a call to scanf that reads in both the width and height.
-    // The scanf function returns an integer with the number of read in variables.
-    // The main program uses this result to check for badly formatted input.
-    // The scanf function can read in multiple variables in one call (see the lecture slides).
+    // scanf function returns an integer with the number of read in variables
     int result = scanf(" %d %d", &width, &height);
     
     // Program only supports images that are 1x1 or bigger
@@ -140,7 +220,7 @@ int main(void)
                 // Draw a point, read in: x, y, color
                 int x = 0;
                 int y = 0;
-                result = scanf(" %d %d %lf", &x, &y, &color); // TODO: fix
+                result = scanf(" %d %d %lf", &x, &y, &color);
                 if (result != 3)
                 {
                     printf("Invalid point command!\n");
@@ -156,7 +236,7 @@ int main(void)
                 int top = 0;
                 int rectangleWidth = 0;
                 int rectangleHeight = 0;
-                result = scanf(" %d %d %d %d %lf", &left, &top, &rectangleWidth, &rectangleHeight, &color); // TODO: fix
+                result = scanf(" %d %d %d %d %lf", &left, &top, &rectangleWidth, &rectangleHeight, &color); 
                 if (result != 5)
                 {
                     printf("Invalid rectangle command!\n");
@@ -169,7 +249,7 @@ int main(void)
             {
                 // Convert to black and white
                 double threshold = 0.0;
-                result = 0; // TODO: fix
+                result = scanf("%lf", &threshold); 
                 if (result != 1)
                 {
                     printf("Invalid black and white command!\n");
@@ -186,7 +266,7 @@ int main(void)
                 int y1 = 0;
                 int x2 = 0;
                 int y2 = 0;      
-                result = 0; // TODO: fix
+                result = scanf("%d %d %d %d %lf", &x1, &y1, &x2, &y2, &color); 
                 if (result != 5)
                 {
                     printf("Invalid line command!\n");
@@ -200,7 +280,7 @@ int main(void)
                 // Flood fill a color in, read in: x, y, color
                 int x = 0;
                 int y = 0;
-                result = 0; // TODO: fix
+                result = scanf(" %d %d %lf", &x, &y, &color); 
                 if (result != 3)
                 {
                     printf("Invalid flood fill command!\n");
