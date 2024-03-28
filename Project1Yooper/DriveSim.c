@@ -158,7 +158,12 @@ bool validDistanceMatrix(int size, int dist[size][size])
     for (int i = 0; i < size; i++)
     {
         for (int j = 0; j < size; j++)
-        {
+        {   
+            // matrix is invalid if entry is not positive
+            if (dist[i][j] < 0)
+            {
+                return false;
+            }
             // matrix is invalid if it is not symmetric
             if (dist[i][j] != dist[j][i])
             {

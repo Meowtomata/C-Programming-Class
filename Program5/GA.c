@@ -76,7 +76,6 @@ int main(int argc, char** argv)
         fitness[i] = abs(fitnessSum - C);
     }
 
-    // check if output file provided (6th optional argument)
     FILE * outfp = NULL;
     if (argc > 5) 
     {
@@ -89,11 +88,12 @@ int main(int argc, char** argv)
         }
     }
 
-    int actualSteps = 0;
-    int mutatedIndividual[N];
+    // keep track of generation to be used outside of loop
+    int generation = 0;
     for (int step = 0; step < maxSteps; step++)
     {   
-
+        int mutatedIndividual[N];
+        
         // select the first individual from the population at random
         int randomIndividual = rand() % P;
 
@@ -110,7 +110,8 @@ int main(int argc, char** argv)
         // update gene
         mutatedIndividual[randomGene] = newGeneValue;
 
-
+        // used for finding min in generation output file
+        // used for mutating worst fit individual with mutated individual
         int worstFitnessIndex = 0;
         for (int i = 1; i < P; i++) 
         {
@@ -136,24 +137,23 @@ int main(int argc, char** argv)
                 fprintf(outfp, ", fitness=%d\n", fitness[i]);
             }
 
-            int bestFitnessIndex = 0;
+            int bestFit = fitness[0];
             double fitnessSum = fitness[0];
             for (int i = 1; i < P; i++) 
             {
-                if (fitness[i] < fitness[bestFitnessIndex])
+                if (fitness[i] < bestFit)
                 {
-                    bestFitnessIndex = i;
+                    bestFit = fitness[i];
                 }
                 fitnessSum += fitness[i];
             }
-            fprintf(outfp, "avg=%.4f, min=%d, max=%d\n", fitnessSum / P, fitness[bestFitnessIndex], fitness[worstFitnessIndex]);
+            fprintf(outfp, "avg=%.4f, min=%d, max=%d\n", fitnessSum / P, bestFit, fitness[worstFitnessIndex]);
         }
 
 
-        // mutation
-        // replace genes of the worst individual in the population with
-        // mutated individual (im guessing through fitness)
+        // sum to calculate fitness of newly mutated individual
         int sum = 0;
+        // Mutation: replace genes of individual with worst fitness with mutated individual
         for (int i = 0; i < N; i++)
         {   
             population[worstFitnessIndex][i] = mutatedIndividual[i];
@@ -161,18 +161,25 @@ int main(int argc, char** argv)
         }
         fitness[worstFitnessIndex] = abs(sum - C);
 
-        actualSteps = step + 1;
+        // keep track of generation outside of current loop
+        generation = step + 1;
 
+        // output gene changes to output file if there is one
         if (outfp != NULL)
         {
             fprintf(outfp, "Mutated individual %d -> %d, changed gene %d to %d\n", randomIndividual, worstFitnessIndex, randomGene, newGeneValue);
         }
+
+        // stop loop early if individual with best fitness found
         if (fitness[worstFitnessIndex] == 0)
         {
             break;
         }
     }
 
+    // get index of individual with best fitness
+    // used to print max fitness in output file
+    // used to print best fitness in console
     int bestFitIndex = 0;
     for (int i = 1; i < P; i++)
     {
@@ -182,10 +189,9 @@ int main(int argc, char** argv)
         }
     }
 
-    // print the final mutated Generation
     if (outfp != NULL)
     {
-        fprintf(outfp, "*** Generation %d ***\n", actualSteps);
+        fprintf(outfp, "*** Generation %d ***\n", generation);
         // print however many individuals there are with their genes
         for (int i = 0; i < P; i++)
         {
@@ -199,28 +205,32 @@ int main(int argc, char** argv)
             fprintf(outfp, ", fitness=%d\n", fitness[i]);
         }
 
-        int worstFitIndex = 0;
+        // get index of individual with worst fitness
+        int worstFit = fitness[0];
         double fitnessSum = fitness[0];
         for (int i = 1; i < P; i++) 
         {
-            if (fitness[i] > fitness[worstFitIndex])
+            if (fitness[i] > worstFit)
             {
-                worstFitIndex = i;
+                worstFit = fitness[i];
             }
             fitnessSum += fitness[i];
         }
-        fprintf(outfp, "avg=%.4f, min=%d, max=%d\n", fitnessSum / P, fitness[bestFitIndex], fitness[worstFitIndex]);
+        fprintf(outfp, "avg=%.4f, min=%d, max=%d\n", fitnessSum / P, fitness[bestFitIndex], worstFit);
+
+        // close file to prevent memory leak
         fclose(outfp);
     }
 
-    
+    // print BEST (index of best fit individual), fitness=..., steps=...
     printf("BEST %d: ", bestFitIndex);
     for (int i = 0; i < N; i++)
     {
         printf("%d", population[bestFitIndex][i]);
     }
-    printf(", fitness=%d, steps=%d\n", fitness[bestFitIndex], actualSteps);
+    printf(", fitness=%d, steps=%d\n", fitness[bestFitIndex], generation);
 
+    // close file to prevent memory leak
     fclose(fp);
     return 0;
 } 

@@ -1,8 +1,13 @@
-// Student stub code for ASCII Drawing assignment
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+/*
+* Name: Anatoliy Lynevych
+* Username: alynevyc
+* Description: 
+* Program 6 converts characters and numbers to commandsthat draw ASCII art
+*/
 
 // Initializes all the pixels of an image to black.
 void initImage(int width, int height, double image[width][height])
@@ -64,7 +69,7 @@ void printImage(int width, int height, double image[width][height])
 
 void drawPoint(int width, int height, double image[width][height], int x, int y, double color)
 {
-    if (x > width || y > height) return;
+    if (x >= width || y >= height || x < 0 || y < 0) return;
     image[x][y] = color;
 }
 
@@ -74,7 +79,7 @@ void drawRectangle(int width, int height, double image[width][height], int left,
     {
         for (int j = 0; j < rectangleHeight; j++)
         {
-            image[left + i][top + j] = color;
+            drawPoint(width, height, image, left + i, top + j, color);
             
         }
     }
@@ -94,27 +99,33 @@ void convertToBlackAndWhite(int width, int height, double image[width][height], 
 
 void drawLine(int width, int height, double image[width][height], int x1, int y1, int x2, int y2, double color)
 {
-    // 2. calculate the difference between the points
-    double dx = x2 - x1;
-    double dy = y2 - y1;
+    // CODE MODIFIED FROM 
+    // https://www.geeksforgeeks.org/dda-line-generation-algorithm-computer-graphics/
 
-    // 3. calculate slope of line
-    double m = dy / dx;
+    // calculate dx & dy 
+    int dx = x2 - x1; 
+    int dy = y2 - y1; 
+  
+    // calculate steps required for generating pixels 
+    int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy); 
+  
+    // calculate increment in x & y for each steps
+    double Xinc = dx / (double)steps; 
+    double Yinc = dy / (double)steps; 
+  
+    // Put pixel for each step 
+    double X = x1; 
+    double Y = y1;
 
-    // 4. set initial point of line
-    image[x1][y1] = color;
+    for (int i = 0; i <= steps; i++) { 
+        int x = round(X);
+        int y = round(Y);
+        
+        drawPoint(width, height, image, x, y, color);
 
-    // 5. Loop through the x-coordinates of the line, incrementing by one each time
-    for (int x = x1; x <= x2; x++)
-    {
-        // , and calculate the corresponding y-coordinate
-        int y = round(y1 + m * (x - x1));
-
-        // 6. Plot the pixel at the calculated (x,y) coordinate.
-        image[x][y] = color;
-    }
-
-    // Repeate until x2, y2 is reached
+        X += Xinc; // increment in x at each step 
+        Y += Yinc; // increment in y at each step 
+    } 
 }
 
 void printStats(int width, int height, double image[width][height])
@@ -266,7 +277,7 @@ int main(void)
                 int y1 = 0;
                 int x2 = 0;
                 int y2 = 0;      
-                result = scanf("%d %d %d %d %lf", &x1, &y1, &x2, &y2, &color); 
+                result = scanf(" %d %d %d %d %lf", &x1, &y1, &x2, &y2, &color); 
                 if (result != 5)
                 {
                     printf("Invalid line command!\n");
