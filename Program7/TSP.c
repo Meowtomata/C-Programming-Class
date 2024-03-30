@@ -5,6 +5,15 @@
 #include <stdbool.h> // Needed for bool data type
 #include <math.h>
 
+/*
+* Name: Anatoliy Lynevych
+* Username: alynevyc
+* Description: 
+* Program 7 solves Traveling Salesman Problem with nearby neighbor and smallest tour distance
+* heuristic
+*/
+
+
 // Node of a linked list that stores (x, y) location of points.
 // DO NOT MODIFY this struct!
 typedef struct node
@@ -39,13 +48,17 @@ void freeTour(List* tour);
 
 void printNode(const Node* node)
 {
-   printf("%.4f %.4f \"%s\"\n", node->x, node->y, node->name);
+   if (node)
+      printf("%.4f %.4f \"%s\"\n", node->x, node->y, node->name);
 }
 
 void printTour(const List* tour)
 {
-   Node* currentNode = tour->first;
+   // check if valid tour
+   if (tour->first == NULL) return;
 
+   Node* currentNode = tour->first;
+   
    printNode(currentNode);
    currentNode = currentNode->next;
 
@@ -53,6 +66,7 @@ void printTour(const List* tour)
    {
       printNode(currentNode);
       currentNode = currentNode->next;
+      
    }
 }
 
@@ -61,26 +75,27 @@ double distance(const Node* a, const Node* b)
    if (a && b)
       return sqrt(pow(b->x - a->x, 2) + pow(b->y - a->y, 2));
    
-   return -1;
+   return 0;
 }
 
 double tourDistance(const List* tour)
-{
+{  
+   // check if valid tour
+   if (tour->first == NULL) return 0;
+
    Node* a = tour->first;
    Node* b = tour->first->next;
    double distanceValue = 0;
 
    // (first, next) + (next, first)
-   while (b != NULL && a != NULL && b != tour->first)
-   {
-
+   while (b != tour->first)
+   {  
       distanceValue += distance(a,b);
-      a = a->next;
       b = b->next;
+      a = a->next;
    }
-
-   distanceValue += distance(a, b);
    
+   distanceValue += distance(a, b);
    return distanceValue;
 }
 
@@ -102,7 +117,6 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
    newNode->name = nodeName;
    newNode->next = NULL;
 
-
    tour->size++;
    // if the first Node is NULL, make the new Node first
    if (tour->first == NULL)
@@ -114,7 +128,7 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
 
       return;
    }
-   
+      
    // point to the first node, assume it is smallest
    Node* currentNode = tour->first;
    Node* smallestNode = currentNode;
@@ -141,11 +155,63 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
 
 void addSmallestIncrease(List* tour, double x, double y, const char* name)
 {
-   printf("This ran6\n");
+
+   char* nodeName = malloc((strlen(name) + 1)*sizeof(char));
+   strcpy(nodeName, name);
+
+   // create a Node struct with manual memory management
+   Node* newNode = malloc(sizeof(Node));
+   newNode->x = x;
+   newNode->y = y;
+   newNode->name = nodeName;
+   newNode->next = NULL;
+
+   tour->size++;
+   // if the first Node is NULL, make the new Node first
+   if (tour->first == NULL)
+   {
+      // set the newNode to start of tour
+      tour->first = newNode;
+      // make the linked list circular
+      tour->first->next = tour->first;
+
+      return;
+   }
+
+
+   // point to the first node, assume it is smallest
+   Node* currentNode = tour->first;
+   Node* smallestNode = currentNode;
+
+   double smallestTourDistance = distance(currentNode, newNode) + distance(currentNode->next, newNode) - distance(currentNode, currentNode->next);
+   double currentTourDistance = 0;
+
+   currentNode = currentNode->next;
+  
+   while (currentNode != tour->first)
+   {
+      
+      currentTourDistance = distance(currentNode, newNode) + distance(currentNode->next, newNode) - distance(currentNode, currentNode->next);
+      if (currentTourDistance < smallestTourDistance)
+      {
+         smallestTourDistance = currentTourDistance;
+         smallestNode = currentNode;
+      }
+
+      currentNode = currentNode->next;
+   }
+
+   // actually insert it 
+   Node* nextNode = smallestNode->next;
+   smallestNode->next = newNode;
+   newNode->next = nextNode;
+   
 }
 
 void freeTour(List* tour)
 {
+   if (tour->first == NULL) return;
+
    Node* currentNode = tour->first->next;
    Node* currentFree;
    while (currentNode != tour->first)
