@@ -39,18 +39,17 @@ void freeTour(List* tour);
 
 void printNode(const Node* node)
 {
-   printf("Running printNode...\n");
-   //printf("%.4f %.4f \"\"\n", node->x, node->y);
    printf("%.4f %.4f \"%s\"\n", node->x, node->y, node->name);
 }
 
 void printTour(const List* tour)
 {
-   printf("Running printTour...\n");
    Node* currentNode = tour->first;
 
    printNode(currentNode);
-   while (currentNode->next != tour->first)
+   currentNode = currentNode->next;
+
+   while (currentNode != tour->first)
    {
       printNode(currentNode);
       currentNode = currentNode->next;
@@ -59,32 +58,34 @@ void printTour(const List* tour)
 
 double distance(const Node* a, const Node* b)
 {
-   printf("Running distance...\n");
    if (a && b)
       return sqrt(pow(b->x - a->x, 2) + pow(b->y - a->y, 2));
    
-   return 0;
+   return -1;
 }
 
 double tourDistance(const List* tour)
 {
-   printf("Running tourDistance...\n");
    Node* a = tour->first;
-   Node* b = tour->first;
+   Node* b = tour->first->next;
+   double distanceValue = 0;
 
-   while (b != NULL && a != NULL && b->next != a)
+   // (first, next) + (next, first)
+   while (b != NULL && a != NULL && b != tour->first)
    {
-      b = b->next;  
+
+      distanceValue += distance(a,b);
+      a = a->next;
+      b = b->next;
    }
    
-   return distance(a, b);
+   distanceValue += distance(a, b);
+   
+   return distanceValue;
 }
 
 void addNearestNeighbor(List* tour, double x, double y, const char* name)
 {
-
-   printf("Running addNearestNeighbor...\n");
-
    char* nodeName = malloc((strlen(name) + 1)*sizeof(char));
    strcpy(nodeName, name);
 
@@ -93,7 +94,7 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
       printf("What\n");
       return;
    }
-   
+
    // MALLOC SAVED THIS HOLY FUCK
    Node* newNode = malloc(sizeof(Node));
    newNode->x = x;
@@ -101,6 +102,8 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
    newNode->name = nodeName;
    newNode->next = NULL;
 
+
+   tour->size++;
    // if the first Node is NULL, make the new Node first
    if (tour->first == NULL)
    {
@@ -114,10 +117,11 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
    
    
    Node* currentNode = tour->first;
-   double smallestDistance = distance(currentNode, newNode);
    Node* smallestNode = currentNode;
+   
+   double smallestDistance = __DBL_MAX__;
    currentNode = currentNode->next;
-
+  
    while (currentNode != tour->first)
    {
       if (distance(currentNode, newNode) < smallestDistance)
@@ -125,7 +129,6 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
          smallestDistance = distance(currentNode, newNode);
          smallestNode = currentNode;
       }
-
       currentNode = currentNode->next;
    }
 
