@@ -3,6 +3,7 @@
 #include <stdio.h>   // Needed for printf function
 #include <string.h>  // Needed to get strcmp function 
 #include <stdbool.h> // Needed for bool data type
+#include <math.h>
 
 // Node of a linked list that stores (x, y) location of points.
 // DO NOT MODIFY this struct!
@@ -38,28 +39,106 @@ void freeTour(List* tour);
 
 void printNode(const Node* node)
 {
+   printf("Running printNode...\n");
+   //printf("%.4f %.4f \"\"\n", node->x, node->y);
+   printf("%.4f %.4f \"%s\"\n", node->x, node->y, node->name);
 }
 
 void printTour(const List* tour)
 {
+   printf("Running printTour...\n");
+   Node* currentNode = tour->first;
+
+   printNode(currentNode);
+   while (currentNode->next != tour->first)
+   {
+      printNode(currentNode);
+      currentNode = currentNode->next;
+   }
 }
 
 double distance(const Node* a, const Node* b)
 {
-   return 0.0;
+   printf("Running distance...\n");
+   if (a && b)
+      return sqrt(pow(b->x - a->x, 2) + pow(b->y - a->y, 2));
+   
+   return 0;
 }
 
 double tourDistance(const List* tour)
 {
-   return 0.0;
+   printf("Running tourDistance...\n");
+   Node* a = tour->first;
+   Node* b = tour->first;
+
+   while (b != NULL && a != NULL && b->next != a)
+   {
+      b = b->next;  
+   }
+   
+   return distance(a, b);
 }
 
 void addNearestNeighbor(List* tour, double x, double y, const char* name)
 {
+
+   printf("Running addNearestNeighbor...\n");
+
+   char* nodeName = malloc((strlen(name) + 1)*sizeof(char));
+   strcpy(nodeName, name);
+
+   if (nodeName == NULL)
+   {
+      printf("What\n");
+      return;
+   }
+   
+   // MALLOC SAVED THIS HOLY FUCK
+   Node* newNode = malloc(sizeof(Node));
+   newNode->x = x;
+   newNode->y = y;
+   newNode->name = nodeName;
+   newNode->next = NULL;
+
+   // if the first Node is NULL, make the new Node first
+   if (tour->first == NULL)
+   {
+      // set the newNode to start of tour
+      tour->first = newNode;
+      // make the linked list circular
+      tour->first->next = tour->first;
+
+      return;
+   }
+   
+   
+   Node* currentNode = tour->first;
+   double smallestDistance = distance(currentNode, newNode);
+   Node* smallestNode = currentNode;
+   currentNode = currentNode->next;
+
+   while (currentNode != tour->first)
+   {
+      if (distance(currentNode, newNode) < smallestDistance)
+      {
+         smallestDistance = distance(currentNode, newNode);
+         smallestNode = currentNode;
+      }
+
+      currentNode = currentNode->next;
+   }
+
+   Node* nextNode = smallestNode->next;
+
+   smallestNode->next = newNode;
+   newNode->next = nextNode;
+   
 }
 
 void addSmallestIncrease(List* tour, double x, double y, const char* name)
 {
+   printf("This ran6\n");
 }
 
 void freeTour(List* tour)
