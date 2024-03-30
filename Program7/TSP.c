@@ -78,7 +78,7 @@ double tourDistance(const List* tour)
       a = a->next;
       b = b->next;
    }
-   
+
    distanceValue += distance(a, b);
    
    return distanceValue;
@@ -95,7 +95,7 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
       return;
    }
 
-   // MALLOC SAVED THIS HOLY FUCK
+   // create a Node struct with manual memory management
    Node* newNode = malloc(sizeof(Node));
    newNode->x = x;
    newNode->y = y;
@@ -115,11 +115,11 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
       return;
    }
    
-   
+   // point to the first node, assume it is smallest
    Node* currentNode = tour->first;
    Node* smallestNode = currentNode;
-   
-   double smallestDistance = __DBL_MAX__;
+
+   double smallestDistance = distance(tour->first, newNode);
    currentNode = currentNode->next;
   
    while (currentNode != tour->first)
@@ -146,6 +146,16 @@ void addSmallestIncrease(List* tour, double x, double y, const char* name)
 
 void freeTour(List* tour)
 {
+   Node* currentNode = tour->first->next;
+   Node* currentFree;
+   while (currentNode != tour->first)
+   {
+      free(currentNode->name);
+      currentFree = currentNode;
+      currentNode = currentNode->next;
+      free(currentFree);
+   }
+   free(tour->first);
 }
 
 // main function, DO NOT MODIFY!
