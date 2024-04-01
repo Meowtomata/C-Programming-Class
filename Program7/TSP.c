@@ -1,4 +1,3 @@
-
 #include <stdlib.h>  // Needed to get the NULL constant  
 #include <stdio.h>   // Needed for printf function
 #include <string.h>  // Needed to get strcmp function 
@@ -12,7 +11,6 @@
 * Program 7 solves Traveling Salesman Problem with nearby neighbor and smallest tour distance
 * heuristic
 */
-
 
 // Node of a linked list that stores (x, y) location of points.
 // DO NOT MODIFY this struct!
@@ -48,6 +46,7 @@ void freeTour(List* tour);
 
 void printNode(const Node* node)
 {
+   // if node exists, print x, y, and location name
    if (node)
       printf("%.4f %.4f \"%s\"\n", node->x, node->y, node->name);
 }
@@ -57,11 +56,12 @@ void printTour(const List* tour)
    // check if valid tour
    if (tour->first == NULL) return;
 
+   // print first node
    Node* currentNode = tour->first;
-   
    printNode(currentNode);
    currentNode = currentNode->next;
 
+   // print rest of nodes
    while (currentNode != tour->first)
    {
       printNode(currentNode);
@@ -70,14 +70,24 @@ void printTour(const List* tour)
    }
 }
 
+/*
+* Return Euclidean distance between two nodes
+*/
 double distance(const Node* a, const Node* b)
 {
+   // if a and b are valid
    if (a && b)
+      // use Euclidean distance formula to calculate distance
       return sqrt(pow(b->x - a->x, 2) + pow(b->y - a->y, 2));
    
    return 0;
 }
 
+/*
+* Return the total distance between each of the nodes
+* including the distance between the start node and
+* the node before it
+*/
 double tourDistance(const List* tour)
 {  
    // check if valid tour
@@ -87,7 +97,7 @@ double tourDistance(const List* tour)
    Node* b = tour->first->next;
    double distanceValue = 0;
 
-   // (first, next) + (next, first)
+   // add nodes except for final two
    while (b != tour->first)
    {  
       distanceValue += distance(a,b);
@@ -95,20 +105,20 @@ double tourDistance(const List* tour)
       a = a->next;
    }
    
+   // add the final two nodes
    distanceValue += distance(a, b);
    return distanceValue;
 }
 
+/*
+* Create a new Node and insert it based on where it increases the distance
+* between it and some other node is smallest
+*/
 void addNearestNeighbor(List* tour, double x, double y, const char* name)
 {
+   // create a copy of name to insert into Node
    char* nodeName = malloc((strlen(name) + 1)*sizeof(char));
    strcpy(nodeName, name);
-
-   if (nodeName == NULL)
-   {
-      printf("What\n");
-      return;
-   }
 
    // create a Node struct with manual memory management
    Node* newNode = malloc(sizeof(Node));
@@ -132,12 +142,14 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
    // point to the first node, assume it is smallest
    Node* currentNode = tour->first;
    Node* smallestNode = currentNode;
-
    double smallestDistance = distance(tour->first, newNode);
+
    currentNode = currentNode->next;
-  
+   
+   // circular list means tour->first means we've gone through all nodes
    while (currentNode != tour->first)
    {
+      // do we have a smallest distance?
       if (distance(currentNode, newNode) < smallestDistance)
       {
          smallestDistance = distance(currentNode, newNode);
@@ -146,17 +158,21 @@ void addNearestNeighbor(List* tour, double x, double y, const char* name)
       currentNode = currentNode->next;
    }
 
+   // place the node between the smallest node and its neighbor
    Node* nextNode = smallestNode->next;
-
    smallestNode->next = newNode;
    newNode->next = nextNode;
    
 }
 
+/*
+* Create a new Node and insert it based on where it increases the tour distance
+* the smallest
+*/
 void addSmallestIncrease(List* tour, double x, double y, const char* name)
 {
-
-   char* nodeName = malloc((strlen(name) + 1)*sizeof(char));
+   // create a copy of name to insert into Node
+   char* nodeName = malloc((strlen(name) + 1) * sizeof(char));
    strcpy(nodeName, name);
 
    // create a Node struct with manual memory management
@@ -178,50 +194,78 @@ void addSmallestIncrease(List* tour, double x, double y, const char* name)
       return;
    }
 
-
    // point to the first node, assume it is smallest
    Node* currentNode = tour->first;
    Node* smallestNode = currentNode;
 
-   double smallestTourDistance = distance(currentNode, newNode) + distance(currentNode->next, newNode) - distance(currentNode, currentNode->next);
+   // assume this is the smallest effect on tour distance
+   double smallestTourDistance = 
+      distance(currentNode, newNode) 
+      + distance(currentNode->next, newNode) 
+      - distance(currentNode, currentNode->next);
+
+   // initialize currentTourDistance for later
    double currentTourDistance = 0;
 
    currentNode = currentNode->next;
   
+  // circular list means tour->first means we've gone through all nodes
    while (currentNode != tour->first)
    {
-      
-      currentTourDistance = distance(currentNode, newNode) + distance(currentNode->next, newNode) - distance(currentNode, currentNode->next);
+      // this is how inserting the current node would affect tour distance
+      currentTourDistance = 
+         distance(currentNode, newNode) 
+         + distance(currentNode->next, newNode) 
+         - distance(currentNode, currentNode->next);
+
+      // if inserting that node would result in the smallest increase
       if (currentTourDistance < smallestTourDistance)
       {
          smallestTourDistance = currentTourDistance;
          smallestNode = currentNode;
       }
-
       currentNode = currentNode->next;
    }
 
-   // actually insert it 
+   // place the node between the smallest node and its neighbor
    Node* nextNode = smallestNode->next;
    smallestNode->next = newNode;
    newNode->next = nextNode;
    
 }
 
+/*
+* Free each of the malloc's used throughout program
+*
+* This includes: Node name and the Nodes themselves
+*/
 void freeTour(List* tour)
 {
    if (tour->first == NULL) return;
 
+   // start with first->next
    Node* currentNode = tour->first->next;
    Node* currentFree;
+
+   // go through each of the Nodes in tour
    while (currentNode != tour->first)
    {
+      // free name
       free(currentNode->name);
+      // keep track of node to be free'd
       currentFree = currentNode;
+      // loop at next node before freeing
       currentNode = currentNode->next;
+      // free node
       free(currentFree);
+      tour->size = tour->size - 1;
    }
+   // free first node and name
+   free(tour->first->name);
    free(tour->first);
+
+   tour->first = NULL;
+   tour->size = tour->size - 1;
 }
 
 // main function, DO NOT MODIFY!
